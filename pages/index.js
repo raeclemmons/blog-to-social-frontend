@@ -96,114 +96,83 @@ export default function BlogToSocialTool() {
   };
 
   const generateSocialPost = async () => {
-    setIsLoading(true);
-    setError('');
+  setIsLoading(true);
+  setError('');
+  
+  try {
+    let titleToAnalyze = '';
+    let contentToAnalyze = '';
     
-    try {
-      let titleToAnalyze = '';
-      let contentToAnalyze = '';
-      
-      if (inputMethod === 'url') {
-        if (!blogUrl.trim()) {
-          throw new Error('Please enter a blog URL');
-        }
-        const extracted = await fetchBlogContent(blogUrl);
-        titleToAnalyze = extracted.title;
-        contentToAnalyze = extracted.content;
-      } else {
-        if (!blogContent.trim()) {
-          throw new Error('Please add your blog content');
-        }
-        titleToAnalyze = blogTitle.trim();
-        contentToAnalyze = blogContent.trim();
+    if (inputMethod === 'url') {
+      if (!blogUrl.trim()) {
+        throw new Error('Please enter a blog URL');
       }
+      // For testing, we'll skip URL fetching and use mock data
+      titleToAnalyze = "Mock Title from URL";
+      contentToAnalyze = "Mock content extracted from the URL. This is just for testing the UI flow.";
+    } else {
+      if (!blogContent.trim()) {
+        throw new Error('Please add your blog content');
+      }
+      titleToAnalyze = blogTitle.trim();
+      contentToAnalyze = blogContent.trim();
+    }
 
-      const platform = platforms[selectedPlatform];
-      
-      const platformSpecs = {
-        linkedin: `Create a LinkedIn post optimized for professional engagement:
-- Keep post to ${platform.optimalLength} for maximum engagement
-- Start with a compelling hook in the first 2 lines (only first 2 lines show in feed)
-- Use professional but conversational tone
-- Include 3-5 relevant hashtags
-- End with an engagement question
-- Add clear call-to-action to read full article`,
+    const platform = platforms[selectedPlatform];
+    
+    // Mock response after 2 seconds to simulate API call
+    setTimeout(() => {
+      const mockPosts = {
+        linkedin: `🚀 ${titleToAnalyze || 'Your Amazing Blog Post'}
 
-        substack: `Create a Substack Notes post:
-- Keep to ${platform.optimalLength}
-- Conversational and thoughtful tone
-- Focus on one key insight that makes people think
-- Encourage subscriptions naturally
-- No hashtags needed`,
+${contentToAnalyze.substring(0, 100)}...
 
-        bluesky: `Create a Bluesky post:
-- Keep to ${platform.optimalLength}
-- Authentic, personal voice
-- Conversational tone like talking to friends
-- No hashtags needed
-- Encourage genuine discussion`,
+Key insights:
+- Innovation drives success
+- AI is transforming industries  
+- The future is exciting
 
-        facebook: `Create a Facebook post optimized for engagement:
-- Start with attention-grabbing hook in first ${platform.optimalLength}
-- Use emotional storytelling
-- Encourage comments with a question
-- Keep it personal and relatable
-- Minimal hashtags (1-2 max)`,
+What's your take on this? Share your thoughts! 👇
 
-        instagram: `Create an Instagram post optimized for the platform:
-- Strong visual hook in first ${platform.optimalLength}
-- Use line breaks for readability
-- Include 5-10 strategic hashtags
-- Mention "Link in bio" or "More in stories"
-- Encourage saves and shares
-- Use emojis strategically`
+#innovation #AI #thoughtleadership #futureofwork
+
+Read the full article: [LINK]`,
+
+        facebook: `${titleToAnalyze || 'Check this out!'} 🎯
+
+${contentToAnalyze.substring(0, 80)}...
+
+What do you think? 💭`,
+
+        instagram: `✨ ${titleToAnalyze || 'New post alert!'}
+
+${contentToAnalyze.substring(0, 100)}...
+
+📖 Full story in bio
+
+#blog #content #inspiration #growth #mindset`,
+
+        substack: `${contentToAnalyze.substring(0, 150)}...
+
+Thoughts? 💭`,
+
+        bluesky: `${titleToAnalyze || 'Interesting read:'} 
+
+${contentToAnalyze.substring(0, 120)}...
+
+What's your experience with this?`
       };
 
-      const fullContent = titleToAnalyze ? `Title: ${titleToAnalyze}\n\n${contentToAnalyze}` : contentToAnalyze;
-      
-      const prompt = `${platformSpecs[selectedPlatform]}
-
-BLOG CONTENT:
-${fullContent.substring(0, 3000)}
-
-CRITICAL REQUIREMENTS:
-- Optimize for ${platform.optimalLength} (not the max length)
-- Follow ${platform.bestPractices}
-- Maintain the author's unique voice and style
-- Extract the most compelling insight
-- Format specifically for ${platform.name}
-
-Return ONLY the social media post text, no commentary.`;
-
-      const response = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 800,
-          messages: [
-            { role: "user", content: prompt }
-          ]
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to generate post');
-      }
-
-      const data = await response.json();
-      const generatedText = data.content[0].text;
-      
-      setGeneratedPost(generatedText);
-    } catch (err) {
-      setError(err.message);
-    } finally {
+      setGeneratedPost(mockPosts[selectedPlatform] || mockPosts.linkedin);
       setIsLoading(false);
-    }
-  };
+    }, 2000);
 
+  } catch (err) {
+    setError(err.message);
+    setIsLoading(false);
+  }
+};
+  
   const copyToClipboard = async () => {
     try {
       await navigator.clipboard.writeText(generatedPost);
