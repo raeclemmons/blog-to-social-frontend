@@ -107,9 +107,9 @@ export default function BlogToSocialTool() {
       if (!blogUrl.trim()) {
         throw new Error('Please enter a blog URL');
       }
-      // For testing, we'll skip URL fetching and use mock data
-      titleToAnalyze = "Mock Title from URL";
-      contentToAnalyze = "Mock content extracted from the URL. This is just for testing the UI flow.";
+      const extracted = await fetchBlogContent(blogUrl);
+      titleToAnalyze = extracted.title;
+      contentToAnalyze = extracted.content;
     } else {
       if (!blogContent.trim()) {
         throw new Error('Please add your blog content');
@@ -120,55 +120,87 @@ export default function BlogToSocialTool() {
 
     const platform = platforms[selectedPlatform];
     
-    // Mock response after 2 seconds to simulate API call
-    setTimeout(() => {
-      const mockPosts = {
-        linkedin: `🚀 ${titleToAnalyze || 'Your Amazing Blog Post'}
+    const platformSpecs = {
+      linkedin: `Create a LinkedIn post optimized for professional engagement:
+- Keep post to ${platform.optimalLength} for maximum engagement
+- Start with a compelling hook in the first 2 lines (only first 2 lines show in feed)
+- Use professional but conversational tone
+- Include 3-5 relevant hashtags
+- End with an engagement question
+- Add clear call-to-action to read full article`,
 
-${contentToAnalyze.substring(0, 100)}...
+      substack: `Create a Substack Notes post:
+- Keep to ${platform.optimalLength}
+- Conversational and thoughtful tone
+- Focus on one key insight that makes people think
+- Encourage subscriptions naturally
+- No hashtags needed`,
 
-Key insights:
-- Innovation drives success
-- AI is transforming industries  
-- The future is exciting
+      bluesky: `Create a Bluesky post:
+- Keep to ${platform.optimalLength}
+- Authentic, personal voice
+- Conversational tone like talking to friends
+- No hashtags needed
+- Encourage genuine discussion`,
 
-What's your take on this? Share your thoughts! 👇
+      facebook: `Create a Facebook post optimized for engagement:
+- Start with attention-grabbing hook in first ${platform.optimalLength}
+- Use emotional storytelling
+- Encourage comments with a question
+- Keep it personal and relatable
+- Minimal hashtags (1-2 max)`,
 
-#innovation #AI #thoughtleadership #futureofwork
+      instagram: `Create an Instagram post optimized for the platform:
+- Strong visual hook in first ${platform.optimalLength}
+- Use line breaks for readability
+- Include 5-10 strategic hashtags
+- Mention "Link in bio" or "More in stories"
+- Encourage saves and shares
+- Use emojis strategically`
+    };
 
-Read the full article: [LINK]`,
+    const fullContent = titleToAnalyze ? `Title: ${titleToAnalyze}\n\n${contentToAnalyze}` : contentToAnalyze;
+    
+    const prompt = `${platformSpecs[selectedPlatform]}
 
-        facebook: `${titleToAnalyze || 'Check this out!'} 🎯
+BLOG CONTENT:
+${fullContent.substring(0, 3000)}
 
-${contentToAnalyze.substring(0, 80)}...
+CRITICAL REQUIREMENTS:
+- Optimize for ${platform.optimalLength} (not the max length)
+- Follow ${platform.bestPractices}
+- Maintain the author's unique voice and style
+- Extract the most compelling insight
+- Format specifically for ${platform.name}
 
-What do you think? 💭`,
+Return ONLY the social media post text, no commentary.`;
 
-        instagram: `✨ ${titleToAnalyze || 'New post alert!'}
+    const response = await fetch("/api/claude", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 800,
+        messages: [
+          { role: "user", content: prompt }
+        ]
+      })
+    });
 
-${contentToAnalyze.substring(0, 100)}...
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Failed to generate post');
+    }
 
-📖 Full story in bio
-
-#blog #content #inspiration #growth #mindset`,
-
-        substack: `${contentToAnalyze.substring(0, 150)}...
-
-Thoughts? 💭`,
-
-        bluesky: `${titleToAnalyze || 'Interesting read:'} 
-
-${contentToAnalyze.substring(0, 120)}...
-
-What's your experience with this?`
-      };
-
-      setGeneratedPost(mockPosts[selectedPlatform] || mockPosts.linkedin);
-      setIsLoading(false);
-    }, 2000);
-
+    const data = await response.json();
+    const generatedText = data.content[0].text;
+    
+    setGeneratedPost(generatedText);
   } catch (err) {
     setError(err.message);
+  } finally {
     setIsLoading(false);
   }
 };
