@@ -122,12 +122,13 @@ export default function BlogToSocialTool() {
     
     const platformSpecs = {
       linkedin: `Create a LinkedIn post optimized for professional engagement:
-- Keep post to ${platform.optimalLength} for maximum engagement
-- Start with a compelling hook in the first 2 lines (only first 2 lines show in feed)
-- Use professional but conversational tone
+- Target ${platform.optimalLength} for maximum engagement
+- Start with a compelling hook in the first 140 characters (shows before "see more")
+- Use professional but conversational tone with storytelling
 - Include 3-5 relevant hashtags
 - End with an engagement question
-- Add clear call-to-action to read full article`,
+- Add clear call-to-action to read full article
+- Use line breaks and bullet points for readability`,
 
       substack: `Create a Substack Notes post:
 - Keep to ${platform.optimalLength}
