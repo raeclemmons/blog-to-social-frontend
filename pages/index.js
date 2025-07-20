@@ -12,42 +12,42 @@ export default function BlogToSocialTool() {
   const [error, setError] = useState('');
 
   const platforms = {
-    linkedin: { 
-      name: 'LinkedIn', 
-      color: 'bg-blue-600', 
-      optimalLength: '150-300 chars',
-      maxLength: 3000,
-      bestPractices: 'Hook in first 2 lines, professional tone, 3-5 hashtags, question to drive engagement'
-    },
-    substack: { 
-      name: 'Substack Notes', 
-      color: 'bg-orange-500', 
-      optimalLength: '200-400 chars',
-      maxLength: 500,
-      bestPractices: 'Conversational, thought-provoking, encourage subscriptions'
-    },
-    bluesky: { 
-      name: 'Bluesky', 
-      color: 'bg-sky-500', 
-      optimalLength: '200-280 chars',
-      maxLength: 300,
-      bestPractices: 'Authentic, conversational, no hashtags needed'
-    },
-    facebook: { 
-      name: 'Facebook', 
-      color: 'bg-blue-700', 
-      optimalLength: '40-80 chars',
-      maxLength: 2000,
-      bestPractices: 'Short hook, visual storytelling, encourage comments'
-    },
-    instagram: { 
-      name: 'Instagram', 
-      color: 'bg-gradient-to-r from-purple-500 to-pink-500', 
-      optimalLength: '125-150 chars',
-      maxLength: 2200,
-      bestPractices: 'Strong hook, visual appeal, strategic hashtags, stories mention'
-    }
-  };
+  linkedin: { 
+    name: 'LinkedIn', 
+    color: 'bg-blue-600', 
+    optimalLength: '1,300-1,600 chars',
+    maxLength: 3000,
+    bestPractices: 'Hook in first 140 chars, professional tone, 3-5 hashtags, engagement question'
+  },
+  substack: { 
+    name: 'Substack Notes', 
+    color: 'bg-orange-500', 
+    optimalLength: '200-400 chars',
+    maxLength: 500,
+    bestPractices: 'Conversational, thought-provoking, encourage subscriptions'
+  },
+  bluesky: { 
+    name: 'Bluesky', 
+    color: 'bg-sky-500', 
+    optimalLength: '200-280 chars',
+    maxLength: 300,
+    bestPractices: 'Authentic, conversational, no hashtags needed'
+  },
+  facebook: { 
+    name: 'Facebook', 
+    color: 'bg-blue-700', 
+    optimalLength: '100-250 chars',
+    maxLength: 2000,
+    bestPractices: 'Short hook for feed visibility, visual storytelling, encourage comments'
+  },
+  instagram: { 
+    name: 'Instagram', 
+    color: 'bg-gradient-to-r from-purple-500 to-pink-500', 
+    optimalLength: '125-150 chars',
+    maxLength: 2200,
+    bestPractices: 'Strong hook, visual appeal, strategic hashtags, stories mention'
+  }
+};
 
   const fetchBlogContent = async (url) => {
     try {
